@@ -1,4 +1,4 @@
-import sim
+from api import sim
 import sys
 
 LOCALHOST = '127.0.0.1'
