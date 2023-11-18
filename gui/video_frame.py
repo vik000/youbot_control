@@ -15,6 +15,7 @@ class VideoFeedWidget(QWidget):
         self.initUI()
         # Start streaming camera data
         error, res, im = sim.simxGetVisionSensorImage(self.client_id, self.camera_handle, 0, sim.simx_opmode_streaming)
+        self.current_image = None
 
     def initUI(self):
         self.image_label = QLabel(self)
@@ -33,6 +34,7 @@ class VideoFeedWidget(QWidget):
             image.resize([resolution[1], resolution[0], 3])  # Note the order of resolution indices
             image = np.flip(image, 0)
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+            self.current_image = image
             qt_image = QImage(image.data, image.shape[1], image.shape[0], QImage.Format_RGB888)
             pixmap = QPixmap.fromImage(qt_image)
             self.image_label.setPixmap(pixmap)
@@ -41,3 +43,7 @@ class VideoFeedWidget(QWidget):
             pass
         else:
             print("Error fetching image data: ", errorCode)
+
+    def get_current_frame(self):
+        return self.current_image  # Assuming you store the latest frame in self.current_frame
+

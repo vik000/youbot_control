@@ -1,4 +1,4 @@
-from gui.layout import run
+from gui.pyqt_layout import run
 
 
 if __name__ == "__main__":
