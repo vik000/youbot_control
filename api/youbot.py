@@ -1,6 +1,7 @@
 import time
 import math
 from enum import Enum
+import numpy as np
 
 from api import sim, connect
 
@@ -40,32 +41,88 @@ class Wheel(Joint):
         sim.simxSetJointTargetVelocity(self.client_id, self.handle, speed, sim.simx_opmode_oneshot_wait)
 
 
-class JointChain:
-    def __init__(self, client, joints):
+class Revolute(Joint):
+    def __init__(self, client, name, min_range, max_range, starting_position):
+        super().__init__(client, name)
+        self.range = (min_range, max_range)
+        self.current_position = starting_position
+
+    def move(self, angle):
+        self.__rotate(angle)
+
+    def __rotate(self, angle):
+        if angle > self.range[1]:
+            angle = self.range[1]
+        elif angle < self.range[0]:
+            angle = self.range[0]
+        try:
+            sim.simxSetJointTargetPosition(self.client_id, self.handle, np.deg2rad(angle), sim.simx_opmode_oneshot)
+            self.current_position = angle
+        except Exception as e:
+            return str(e)
+
+
+class Prismatic(Joint):
+    def __init__(self, client, name, min_range:float=0, max_range:float=None, starting_position:float=0):
+        super().__init__(client, name)
+        self.range = (min_range, max_range)
+        self.current_position = starting_position
+
+    def move(self, distance):
+        self.__extend(distance)
+
+    def __extend(self, distance):
+        if distance < self.range[0]:
+            distance = self.range[0]
+        elif distance > self.range[1]:
+            distance = self.range[1]
+        else:
+            try:
+                code = sim.simxSetJointTargetPosition(self.client_id, self.handle, distance, sim.simx_opmode_oneshot)
+                print(code)
+                self.current_position = distance
+            except Exception as e:
+                return str(e)
+
+
+class Grip:
+    def __init__(self, client, prismatic0, prismatic1):
         self.client_id = client
-        self.joints = self.__set_joints(joints)
+        self.grip0 = prismatic0
+        self.grip1 = prismatic1
+        self.max_grip = math.fabs(self.grip1.range[1] - self.grip1.range[0])
 
-    def __set_joints(self, joints):
-        joint_set = []
-        for joint in joints:
-            if isinstance(joint, str):
-                joint_set.append(Joint(client=self.client_id, name=joint))
-            elif isinstance(joint, Joint):
-                joint_set.append(joint)
-        return joint_set
-
-    def move_joint(self, position, move_description):
-        self.joints[position].move(move_description)
+    def grip(self, target_distance):
+        print("grip called with", target_distance)
+        target_distance = target_distance if target_distance <= self.max_grip else self.max_grip
+        self.grip1.move(self.grip1.range[0] + self.max_grip - target_distance)
 
 
-class Robot:
+class youBotArm:
+    def __init__(self, client):
+        grip_joint0 = Prismatic(client, "/youBot/youBotGripperJoint1", 0, 0.025, starting_position=0.025)
+        grip_joint1 = Prismatic(client, "/youBot/youBotGripperJoint2", -0.05, 0, starting_position=-0.05)
+        self.joints = [
+            Revolute(client, "/youBot/youBotArmJoint0", min_range=-169, max_range=169, starting_position=0),
+            Revolute(client, "/youBot/youBotArmJoint1", min_range=-90, max_range=-90+165, starting_position=30.91),
+            Revolute(client, "/youBot/youBotArmJoint2", min_range=-131, max_range=-131+262, starting_position=52.42),
+            Revolute(client, "/youBot/youBotArmJoint3", min_range=-102, max_range=-102+204, starting_position=72.68),
+            Revolute(client, "/youBot/youBotArmJoint4", min_range=-90, max_range=90, starting_position=-0.006),
+            Grip(client, grip_joint0, grip_joint1)
+        ]
+
+    def move(self, joint, description):
+        self.joints[joint].move(description)
+
+
+class MovingRobot:
     def __init__(self, name, port) -> None:
         self.name = name
         self.client_id = connect.connect_to_port(port)
         self.speed = BotSpeed.STOP.value
 
 
-class YouBot(Robot):
+class YouBot(MovingRobot):
     def __init__(self, port=19999):
         super().__init__("youBot", port)
         self.WHEEL_RADIUS = 0.05
@@ -80,7 +137,7 @@ class YouBot(Robot):
         self.left_wheels = [self.back_left_wheel, self.front_left_wheel]
         self.right_wheels = [self.back_right_wheel, self.front_right_wheel]
         self.all_wheels = self.front_axis + self.back_axis
-        # self.arm = JointChain([])
+        self.arm = youBotArm(self.client_id)
 
     def set_wheel_velocities(self, left_wheel_velocity, right_wheel_velocity, duration):
         for wheel in self.left_wheels:

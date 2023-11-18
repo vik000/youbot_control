@@ -4,10 +4,11 @@ import cv2
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget,
                              QVBoxLayout, QHBoxLayout, QGridLayout,
                              QPushButton, QSlider, QRadioButton,
-                             QLabel, QGroupBox, QFileDialog)
+                             QLabel, QGroupBox, QFileDialog, QLineEdit)
+from PyQt5.QtCore import Qt
 
 from api import sim
-from api.youbot import YouBot, BotSpeed, AngularSpeed
+from api.youbot import YouBot, BotSpeed, AngularSpeed, Revolute, Grip
 from gui.video_frame import VideoFeedWidget
 
 youbot = YouBot()
@@ -36,7 +37,7 @@ class MainWindow(QMainWindow):
         side_panel_layout = QVBoxLayout()
 
         # Control group box (for radio buttons and sliders)
-        control_group = QGroupBox('Controls')
+        control_group = QGroupBox('Arm Controls')
         control_group_layout = QVBoxLayout(control_group)
 
         # Add a save button
@@ -44,13 +45,50 @@ class MainWindow(QMainWindow):
         self.save_button.clicked.connect(self.save_image)
         side_panel_layout.addWidget(self.save_button)
 
-        # Sliders
-        slider_1 = QSlider()
-        slider_2 = QSlider()
-        slider_3 = QSlider()
-        control_group_layout.addWidget(slider_1)
-        control_group_layout.addWidget(slider_2)
-        control_group_layout.addWidget(slider_3)
+        # Arm controls
+        self.arm_sliders = []
+        SCALE_FACTOR = 100
+        for joint in youbot.arm.joints:
+            if isinstance(joint, Revolute):
+                slider = QSlider(Qt.Horizontal)
+                slider.setMinimum(int(joint.range[0] * SCALE_FACTOR))
+                slider.setMaximum(int(joint.range[1] * SCALE_FACTOR))
+                slider.setValue(int(joint.current_position * SCALE_FACTOR))
+
+                # Create labels for min, max, and current value
+                min_label = QLabel(f"Min: {joint.range[0]} deg")
+                max_label = QLabel(f"Max: {joint.range[1]} deg")
+                current_label = QLabel(f"Current: {joint.current_position} deg")
+
+                slider.valueChanged.connect(lambda value, j=joint: j.move(value / SCALE_FACTOR))
+                slider.valueChanged.connect(lambda value, lbl=current_label: lbl.setText(f"Current: {value} deg"))
+
+                # add widgets to sidebar section:
+                control_group_layout.addWidget(min_label)
+                control_group_layout.addWidget(slider)
+                control_group_layout.addWidget(max_label)
+                control_group_layout.addWidget(current_label)
+
+                self.arm_sliders.append(slider)
+            else:
+                assert isinstance(joint, Grip)
+                self.grip = joint
+                # Grip Control Section
+                grip_layout = QVBoxLayout()
+                self.grip_input = QLineEdit()
+                self.grip_input.setPlaceholderText("Enter grip distance")
+                self.grip_button = QPushButton("Activate Grip")
+                self.grip_button.clicked.connect(self.__on_grip_button_clicked)
+                self.grip_label_0 = QLabel("Grip0: 0")
+                self.grip_label_1 = QLabel("Grip1: 0")
+
+                # Setup grip layout
+                grip_layout.addWidget(QLabel("Grip Size:"))
+                grip_layout.addWidget(self.grip_input)
+                grip_layout.addWidget(self.grip_button)
+                grip_layout.addWidget(self.grip_label_0)
+                grip_layout.addWidget(self.grip_label_1)
+                control_group_layout.addLayout(grip_layout)
 
         side_panel_layout.addWidget(control_group)
 
@@ -87,6 +125,13 @@ class MainWindow(QMainWindow):
             if frame is not None:
                 frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
                 cv2.imwrite(file_path, frame)
+
+    def __on_grip_button_clicked(self):
+        try:
+            distance = float(self.grip_input.text())
+            self.grip.grip(distance)  # Replace with your grip method call
+        except ValueError:
+            print("Please enter a valid number for the grip distance")
 
     def setup_controls(self):
         # Setup control buttons with event handlers
