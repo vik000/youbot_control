@@ -40,11 +40,29 @@ class Wheel(Joint):
         sim.simxSetJointTargetVelocity(self.client_id, self.handle, speed, sim.simx_opmode_oneshot_wait)
 
 
+class JointChain:
+    def __init__(self, client, joints):
+        self.client_id = client
+        self.joints = self.__set_joints(joints)
+
+    def __set_joints(self, joints):
+        joint_set = []
+        for joint in joints:
+            if isinstance(joint, str):
+                joint_set.append(Joint(client=self.client_id, name=joint))
+            elif isinstance(joint, Joint):
+                joint_set.append(joint)
+        return joint_set
+
+    def move_joint(self, position, move_description):
+        self.joints[position].move(move_description)
+
+
 class Robot:
     def __init__(self, name, port) -> None:
         self.name = name
         self.client_id = connect.connect_to_port(port)
-        self.speed = BotSpeed.STOP
+        self.speed = BotSpeed.STOP.value
 
 
 class YouBot(Robot):
@@ -62,6 +80,7 @@ class YouBot(Robot):
         self.left_wheels = [self.back_left_wheel, self.front_left_wheel]
         self.right_wheels = [self.back_right_wheel, self.front_right_wheel]
         self.all_wheels = self.front_axis + self.back_axis
+        # self.arm = JointChain([])
 
     def set_wheel_velocities(self, left_wheel_velocity, right_wheel_velocity, duration):
         for wheel in self.left_wheels:
@@ -70,6 +89,7 @@ class YouBot(Robot):
         for wheel in self.right_wheels:
             wheel.move(right_wheel_velocity)
 
+        duration = duration if duration > 0 else 0
         time.sleep(duration)
         self.stop()
 
@@ -111,7 +131,7 @@ class YouBot(Robot):
     def stop(self):
         # Stops all wheels
         for wheel in self.all_wheels:
-            wheel.move(BotSpeed.STOP)
+            wheel.move(BotSpeed.STOP.value)
 
 
 YOUBOT = YouBot(port=19999)
