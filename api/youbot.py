@@ -63,13 +63,22 @@ class Revolute(Joint):
 
 
 class Prismatic(Joint):
-    def __init__(self, client, name, min_range:float=0, max_range:float=None, starting_position:float=0):
+    def __init__(self, client, name, type, min_range:float=0, max_range:float=None, starting_position:float=0):
         super().__init__(client, name)
         self.range = (min_range, max_range)
         self.current_position = starting_position
+        self.move_type = type
 
-    def move(self, distance):
-        self.__extend(distance)
+    def move(self, movement):
+        if self.move_type == "position":
+            self.__extend(movement)
+
+        elif self.move_type == "velocity":
+            self.__move_to(movement)
+
+    def __move_to(self, speed):
+        sim.simxSetJointTargetVelocity(self.client_id, self.handle, speed, sim.simx_opmode_oneshot_wait)
+        sim.simxSetJointTargetVelocity(self.client_id, self.handle, speed, sim.simx_opmode_streaming)
 
     def __extend(self, distance):
         if distance < self.range[0]:
@@ -77,12 +86,12 @@ class Prismatic(Joint):
         elif distance > self.range[1]:
             distance = self.range[1]
         else:
-            try:
-                code = sim.simxSetJointTargetPosition(self.client_id, self.handle, distance, sim.simx_opmode_oneshot)
-                print(code)
-                self.current_position = distance
-            except Exception as e:
-                return str(e)
+            # code = sim.simxSetJointTargetPosition(self.client_id, self.handle, distance, sim.simx_opmode_oneshot)
+            # code = sim.simxSetJointPosition(self.client_id, self.handle, distance, sim.simx_opmode_oneshot)
+            # code = sim.simxSetJointPosition(self.client_id, self.handle, distance, sim.simx_opmode_streaming)
+            code = sim.simxSetJointPosition(self.client_id, self.handle, distance, sim.simx_opmode_oneshot_wait)
+            print(code)
+            self.current_position = distance
 
 
 class Grip:
@@ -95,13 +104,21 @@ class Grip:
     def grip(self, target_distance):
         print("grip called with", target_distance)
         target_distance = target_distance if target_distance <= self.max_grip else self.max_grip
-        self.grip1.move(self.grip1.range[0] + self.max_grip - target_distance)
+        try:
+            self.grip0.move(self.grip0.range[0] + self.max_grip - target_distance)
+        except Exception:
+            print(0)
+        try:
+            self.grip1.move(self.grip1.range[0] + self.max_grip - target_distance)
+
+        except Exception:
+            print(1)
 
 
 class youBotArm:
     def __init__(self, client):
-        grip_joint0 = Prismatic(client, "/youBot/youBotGripperJoint1", 0, 0.025, starting_position=0.025)
-        grip_joint1 = Prismatic(client, "/youBot/youBotGripperJoint2", -0.05, 0, starting_position=-0.05)
+        grip_joint0 = Prismatic(client, "/youBot/youBotGripperJoint1", "position", 0, 0.025, starting_position=0.025)
+        grip_joint1 = Prismatic(client, "/youBot/youBotGripperJoint2", "velocity", -0.05, 0, starting_position=-0.05)
         self.joints = [
             Revolute(client, "/youBot/youBotArmJoint0", min_range=-169, max_range=169, starting_position=0),
             Revolute(client, "/youBot/youBotArmJoint1", min_range=-90, max_range=-90+165, starting_position=30.91),

@@ -209,7 +209,7 @@ def ImageToFloatArray(image, scale_factor=None):
             scale_factor = DEFAULT_RGB_SCALE_FACTOR
     else:
         if scale_factor is None:
-            scale_factor = DEFAULT_GRAY_SCALE_FACTOR[image_dtype.type]
+            scale_factor = DEFAULT_GRAY_SCALE_FACTOR[image_dtype.move_type]
         float_array = image_array.astype(np.float32)
     scaled_array = float_array / scale_factor
     return scaled_array
