@@ -1,0 +1,28 @@
+
+fpython:S1192Å"MDefine a constant instead of duplicating this literal ' transform: ' 3 times.(èêû
+cpython:S1192Å"JDefine a constant instead of duplicating this literal ' handle: ' 3 times.(èêû
+hpython:S1542¢"ORename function "csimPrint" to match the regular expression ^[a-z_][a-z0-9_]*$.(Ÿ¬¡İ
+Rpython:S1481¸"4Replace unused local variable "ret_floats" with "_".(×°Ğıÿÿÿÿ
+Spython:S1481¸"5Replace unused local variable "ret_strings" with "_".(×°Ğıÿÿÿÿ
+Rpython:S1481¸"4Replace unused local variable "ret_buffer" with "_".(×°Ğıÿÿÿÿ
+kpython:S1542Í"MRename function "setPose" to match the regular expression ^[a-z_][a-z0-9_]*$.(ÚÜ“øüÿÿÿÿ
+Rpython:S1481Ú"4Replace unused local variable "ret_buffer" with "_".(×°Ğıÿÿÿÿ
+Rpython:S1481Ú"4Replace unused local variable "ret_floats" with "_".(×°Ğıÿÿÿÿ
+Spython:S1481Ú"5Replace unused local variable "ret_strings" with "_".(×°Ğıÿÿÿÿ
+Ipython:S1481©"0Remove the unused local variable "cloud_handle".(£ÿÊ˜
+Rpython:S1481ª"4Replace unused local variable "ret_floats" with "_".(×°Ğıÿÿÿÿ
+Dpython:S1481",Remove the unused local variable "is_float".(ªÁªY
+Rpython:S1481ª"4Replace unused local variable "ret_buffer" with "_".(×°Ğıÿÿÿÿ
+Spython:S1481ª"5Replace unused local variable "ret_strings" with "_".(×°Ğıÿÿÿÿ
+Mpython:S1135ˆ"4Complete the task associated to this "TODO" comment.(–£ÿ
+python:S117­"uRename this local variable "simInsertPointsIntoPointCloudOptions" to match the regular expression ^[_a-z][a-z0-9_]*$.(¡€ç
+qpython:S107¿"YFunction "create_point_cloud" has 19 parameters, which is greater than the 13 authorized.(¶¾œß
+Rpython:S1481“"4Replace unused local variable "ret_buffer" with "_".(×°Ğıÿÿÿÿ
+Spython:S1481“"5Replace unused local variable "ret_strings" with "_".(×°Ğıÿÿÿÿ
+Rpython:S1481“"4Replace unused local variable "ret_floats" with "_".(×°Ğıÿÿÿÿ
+mpython:S3776¿"TRefactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.(¶¾œß
+<python:S125®"Remove this commented out code.(Â¤ûıÿÿÿÿ
+mpython:S1542Ï"ORename function "drawLines" to match the regular expression ^[a-z_][a-z0-9_]*$.(°ªÉÜşÿÿÿÿ
+Rpython:S1481à"4Replace unused local variable "ret_floats" with "_".(×°Ğıÿÿÿÿ
+Spython:S1481à"5Replace unused local variable "ret_strings" with "_".(×°Ğıÿÿÿÿ
+Rpython:S1481à"4Replace unused local variable "ret_buffer" with "_".(×°Ğıÿÿÿÿ

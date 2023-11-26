@@ -1,0 +1,10 @@
+
+jpython:S1854U"MRemove this assignment to local variable 'distance'; the value is never used.(±Î§êùÿÿÿÿ
+epython:S1854W"MRemove this assignment to local variable 'distance'; the value is never used.(¢çç
+6python:S125Y"Remove this commented out code.(È±‚Œ
+Vpython:S1172h"7Remove the unused function parameter "target_distance".(°Û—é8¾©ÎÛÀ1
+Opython:S1481|"+Remove the unused local variable "option5".(ç®Ìªÿÿÿÿÿ8…šîÛÀ1
+=python:S125}"Remove this commented out code.(Èò¥Ó8…šîÛÀ1
+>python:S125ƒ"Remove this commented out code.(ªâù¹8§þ®ÜÀ1
+{python:S101‘"cRename class "youBotArm" to match the regular expression ^_?([A-Z_][a-zA-Z0-9]*|[a-z_][a-z0-9_]*)$.(„½£™
+Cpython:S125Å"Remove this commented out code.(ÓÁ†Þúÿÿÿÿ8®§£ÝÀ1

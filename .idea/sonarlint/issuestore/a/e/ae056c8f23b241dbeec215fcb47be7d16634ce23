@@ -1,0 +1,10 @@
+
+Tpython:S5754"<Specify an exception class to catch or reraise the exception(ˆÊÉ·
+lpython:S116"VRename this field "executedMovId2" to match the regular expression ^[_a-z][_a-z0-9]*$.(•ÏÜ
+rpython:S116"VRename this field "executedMovId1" to match the regular expression ^[_a-z][_a-z0-9]*$.(‹êë®ÿÿÿÿÿ
+opython:S1175"XRename this local variable "retCode" to match the regular expression ^[_a-z][a-z0-9_]*$.(Ýƒ€Ô
+{python:S15423"^Rename function "waitForMovementExecuted1" to match the regular expression ^[a-z_][a-z0-9_]*$.(þ‚ß†þÿÿÿÿ
+=python:S66607"%Use the `isinstance()` function here.(ªÈÈº
+tpython:S117="XRename this local variable "retCode" to match the regular expression ^[_a-z][a-z0-9_]*$.(Á¤«æüÿÿÿÿ
+vpython:S1542;"^Rename function "waitForMovementExecuted2" to match the regular expression ^[a-z_][a-z0-9_]*$.(Äß‰¿
+=python:S6660?"%Use the `isinstance()` function here.(ªÈÈº

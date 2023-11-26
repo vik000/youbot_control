@@ -1,0 +1,5 @@
+
+Dpython:S1481",Replace unused local variable "im" with "_".(‘‡Ð×
+Gpython:S1481"/Replace unused local variable "error" with "_".(‘‡Ð×
+Epython:S1481"-Replace unused local variable "res" with "_".(‘‡Ð×
+qpython:S117"ZRename this local variable "errorCode" to match the regular expression ^[_a-z][a-z0-9_]*$.(ÝÙ¿×

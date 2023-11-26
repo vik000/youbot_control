@@ -78,7 +78,7 @@ class Prismatic(Joint):
 
     def __move_to(self, speed):
         sim.simxSetJointTargetVelocity(self.client_id, self.handle, speed, sim.simx_opmode_oneshot_wait)
-        sim.simxSetJointTargetVelocity(self.client_id, self.handle, speed, sim.simx_opmode_streaming)
+        # sim.simxSetJointTargetVelocity(self.client_id, self.handle, speed, sim.simx_opmode_streaming)
 
     def __extend(self, distance):
         if distance < self.range[0]:
@@ -102,17 +102,44 @@ class Grip:
         self.max_grip = math.fabs(self.grip1.range[1] - self.grip1.range[0])
 
     def grip(self, target_distance):
-        print("grip called with", target_distance)
-        target_distance = target_distance if target_distance <= self.max_grip else self.max_grip
-        try:
-            self.grip0.move(self.grip0.range[0] + self.max_grip - target_distance)
-        except Exception:
-            print(0)
-        try:
-            self.grip1.move(self.grip1.range[0] + self.max_grip - target_distance)
+        # grip0:
+        # option1 = sim.simxSetJointTargetPosition(self.client_id, self.grip0.handle, 0, sim.simx_opmode_oneshot)
+        # option2 = sim.simxSetJointTargetPosition(self.client_id, self.grip0.handle, 0, sim.simx_opmode_streaming)
+        # option3 = sim.simxSetJointTargetPosition(self.client_id, self.grip0.handle, 0, sim.simx_opmode_oneshot_wait)
+        #
+        # option4 = sim.simxSetJointPosition(self.client_id, self.grip0.handle, 0, sim.simx_opmode_oneshot)
+        # option5 = sim.simxSetJointPosition(self.client_id, self.grip0.handle, 0, sim.simx_opmode_streaming)
+        # option6 = sim.simxSetJointPosition(self.client_id, self.grip0.handle, 0, sim.simx_opmode_oneshot_wait)
+        #
+        # option7 = sim.simxSetJointTargetVelocity(self.client_id, self.grip0.handle, 0.5, sim.simx_opmode_oneshot)
+        # option8 = sim.simxSetJointTargetVelocity(self.client_id, self.grip0.handle, 0.5, sim.simx_opmode_streaming)
+        # option9 = sim.simxSetJointTargetVelocity(self.client_id, self.grip0.handle, 0.5, sim.simx_opmode_oneshot_wait)
+        #
+        # # grip1:
+        # option1 = sim.simxSetJointTargetPosition(self.client_id, self.grip1.handle, 0, sim.simx_opmode_oneshot)
+        # option2 = sim.simxSetJointTargetPosition(self.client_id, self.grip1.handle, 0, sim.simx_opmode_streaming)
+        # option3 = sim.simxSetJointTargetPosition(self.client_id, self.grip1.handle, 0, sim.simx_opmode_oneshot_wait)
+        #
+        # option4 = sim.simxSetJointPosition(self.client_id, self.grip1.handle, 0, sim.simx_opmode_oneshot)
+        option5 = sim.simxSetJointPosition(self.client_id, self.grip1.handle, 0, sim.simx_opmode_streaming)
+        # option6 = sim.simxSetJointPosition(self.client_id, self.grip1.handle, 0, sim.simx_opmode_oneshot_wait)
+        #
+        # option7 = sim.simxSetJointTargetVelocity(self.client_id, self.grip1.handle, 0.5, sim.simx_opmode_oneshot_wait)
+        # option8 = sim.simxSetJointTargetVelocity(self.client_id, self.grip1.handle, 0.5, sim.simx_opmode_oneshot_wait)
+        # option9 = sim.simxSetJointTargetVelocity(self.client_id, self.grip1.handle, 0.5, sim.simx_opmode_oneshot_wait)
 
-        except Exception:
-            print(1)
+        # print(code)
+        # print("grip called with", target_distance)
+        # target_distance = target_distance if target_distance <= self.max_grip else self.max_grip
+        # try:
+        #     self.grip0.move(self.grip0.range[0] + self.max_grip - target_distance)
+        # except Exception:
+        #     print(0)
+        # try:
+        #     self.grip1.move(self.grip1.range[0] + self.max_grip - target_distance)
+        #
+        # except Exception:
+        #     print(1)
 
 
 class youBotArm:
@@ -167,18 +194,39 @@ class YouBot(MovingRobot):
         time.sleep(duration)
         self.stop()
 
+    # def set_rotation_in_place(self, angle_degrees, angular_speed_deg_s):
+    #     # Convert degrees to radians
+    #     angle_rad = math.radians(angle_degrees)
+    #     angular_speed_rad_s = math.radians(angular_speed_deg_s)
+    #
+    #     # Calculate wheel velocities
+    #     v = (self.WHEEL_DISTANCE / 2) * angular_speed_rad_s
+    #     left_wheel_velocity = v / self.WHEEL_RADIUS
+    #     right_wheel_velocity = -v / self.WHEEL_RADIUS
+    #
+    #     # Set velocities for a duration to achieve the desired angle
+    #     duration = angle_rad / angular_speed_rad_s
+    #     self.set_wheel_velocities(left_wheel_velocity, right_wheel_velocity, duration)
+
     def set_rotation_in_place(self, angle_degrees, angular_speed_deg_s):
         # Convert degrees to radians
         angle_rad = math.radians(angle_degrees)
-        angular_speed_rad_s = math.radians(angular_speed_deg_s)
+        angular_speed_rad_s = math.radians(abs(angular_speed_deg_s))
 
         # Calculate wheel velocities
         v = (self.WHEEL_DISTANCE / 2) * angular_speed_rad_s
-        left_wheel_velocity = v / self.WHEEL_RADIUS
-        right_wheel_velocity = -v / self.WHEEL_RADIUS
+        wheel_velocity = v / self.WHEEL_RADIUS
+
+        # Determine direction based on the sign of the angle
+        if angle_degrees > 0:
+            left_wheel_velocity = wheel_velocity
+            right_wheel_velocity = -wheel_velocity
+        else:
+            left_wheel_velocity = -wheel_velocity
+            right_wheel_velocity = wheel_velocity
 
         # Set velocities for a duration to achieve the desired angle
-        duration = angle_rad / angular_speed_rad_s
+        duration = abs(angle_rad / angular_speed_rad_s)
         self.set_wheel_velocities(left_wheel_velocity, right_wheel_velocity, duration)
 
     def set_arc_movement(self, linear_speed_m_s, radius_m, arc_angle_degrees):

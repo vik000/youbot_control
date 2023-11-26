@@ -1,0 +1,5 @@
+
+Tpython:S5754"<Specify an exception class to catch or reraise the exception(ˆÊÉ·
+opython:S117+"XRename this local variable "retCode" to match the regular expression ^[_a-z][a-z0-9_]*$.(°Ø´…
+upython:S1542'"]Rename function "waitForMovementExecuted" to match the regular expression ^[a-z_][a-z0-9_]*$.(ÝÍé…
+=python:S6660-"%Use the `isinstance()` function here.(ªÈÈº
